@@ -1,5 +1,4 @@
 import time
-from argparse import Namespace
 from pprint import pprint
 
 import pandas as pd
