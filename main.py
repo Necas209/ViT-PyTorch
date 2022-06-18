@@ -99,7 +99,7 @@ def main():
     print("--- Model testing ---")
     test(model, test_loader)
     print("--- Model validation ---")
-    val_and_eval(model, val_loader)
+    test(model, val_loader)
 
 
 def save_checkpoint(state: dict, is_best: bool, filename: str = 'checkpoint.pth.tar'):

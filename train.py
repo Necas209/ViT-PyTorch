@@ -4,7 +4,6 @@ from pprint import pprint
 import pandas as pd
 import torch.nn as nn
 import torch.nn.parallel
-# used for logging to TensorBoard
 from sklearn.metrics import mean_squared_error, r2_score
 from tensorboard_logger import log_value
 from timm.models.vision_transformer import VisionTransformer
@@ -91,7 +90,7 @@ def validate(model: VisionTransformer, val_loader: DataLoader,
     return losses.avg
 
 
-def test(model: VisionTransformer, test_loader: DataLoader) -> None:
+def test(model: VisionTransformer, loader: DataLoader) -> None:
     """Perform testing on the test set"""
     # switch to evaluate mode
     model.eval()
@@ -99,30 +98,8 @@ def test(model: VisionTransformer, test_loader: DataLoader) -> None:
     # actual and predicted y values
     t_y = torch.Tensor().cuda()
     t_yhat = torch.Tensor().cuda()
-    for i, (inp, target) in enumerate(test_loader):
-        target: torch.Tensor = target.cuda(non_blocking=True)
-        inp: torch.Tensor = inp.cuda()
 
-        # compute output
-        with torch.no_grad():
-            output: torch.Tensor = model(inp)
-
-        # store y and yhat values
-        t_y = torch.cat((t_y, target))
-        t_yhat = torch.cat((t_yhat, output))
-    # Calculate RMSE loss and R^2
-    evaluate(t_y, t_yhat)
-
-
-def val_and_eval(model: VisionTransformer, val_loader: DataLoader) -> None:
-    """Evaluate model's performance in validation set"""
-    # switch to evaluate mode
-    model.eval()
-
-    # actual and predicted y values
-    t_y = torch.Tensor().cuda()
-    t_yhat = torch.Tensor().cuda()
-    for i, (inp, target) in enumerate(val_loader):
+    for i, (inp, target) in enumerate(loader):
         target: torch.Tensor = target.cuda(non_blocking=True)
         inp: torch.Tensor = inp.cuda()
 
