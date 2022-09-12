@@ -34,6 +34,7 @@ class AverageMeter:
 def load_data(args: argparse.Namespace) -> tuple[DataLoader, DataLoader, DataLoader]:
     """Loads data, either from .mat file or saved dictionary, and returns tuple of DataLoaders"""
     if args.data is False:
+        # Load data from .mat file and clean it
         mat = sio.loadmat('Hyper_2012_TF_sugar.mat')
         x: np.ndarray = mat['MeanROffPedNorm']
         y: np.ndarray = mat['sugar']
