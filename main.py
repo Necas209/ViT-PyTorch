@@ -3,12 +3,15 @@ import os
 import shutil
 
 import timm
+import torch
 from tensorboard_logger import configure
-from torch import optim
+from timm.models import VisionTransformer
+from torch import optim, nn
 from torch.backends import cudnn
 from torchsummary import summary
 
-from train import *
+from train import train, validate, test
+from utils import load_data
 
 parser = argparse.ArgumentParser(description='PyTorch ViT Training')
 parser.add_argument('--epochs', default=500, type=int,
@@ -23,20 +26,20 @@ parser.add_argument('--resume',
                     help='path to latest checkpoint (default: --name)', action='store_true')
 parser.add_argument('--best',
                     help='Load best model (default: --name)', action='store_true')
-parser.add_argument('--name', default='ViT-B-P16-224', type=str,
+parser.add_argument('--name', default='ViT-B-P8-224', type=str,
                     help='name of experiment')
 parser.add_argument('--tensorboard',
                     help='Log progress to TensorBoard', action='store_true')
-parser.add_argument('--model', default='vit_base_patch16_224', type=str,
+parser.add_argument('--model', default='vit_base_patch8_224', type=str,
                     help='name of ViT model to use')
 parser.add_argument('--data',
                     help='Load data from dictionary (default: dataloader_dict.pt', action='store_true')
 
 best_loss = None
-args = Namespace
+args = argparse.Namespace
 
 
-def main():
+def main() -> None:
     global args, best_loss
     args = parser.parse_args()
     if args.tensorboard:

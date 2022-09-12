@@ -1,3 +1,6 @@
+from __future__ import annotations
+
+import argparse
 import time
 from pprint import pprint
 
@@ -10,12 +13,11 @@ from timm.models.vision_transformer import VisionTransformer
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 
-from utils import *
+from utils import AverageMeter
 
 
-def train(model: VisionTransformer, train_loader: DataLoader,
-          criterion: nn.MSELoss, optimizer: Adam,
-          epoch: int, args: Namespace):
+def train(model: VisionTransformer, train_loader: DataLoader, criterion: nn.MSELoss, optimizer: Adam, epoch: int,
+          args: argparse.Namespace) -> None:
     """Train for one epoch on the training set"""
     batch_time = AverageMeter()
     losses = AverageMeter()
@@ -53,9 +55,8 @@ def train(model: VisionTransformer, train_loader: DataLoader,
         log_value('train_loss', losses.avg, epoch)
 
 
-def validate(model: VisionTransformer, val_loader: DataLoader,
-             criterion: nn.MSELoss,
-             epoch: int, args: Namespace):
+def validate(model: VisionTransformer, val_loader: DataLoader, criterion: nn.MSELoss, epoch: int,
+             args: argparse.Namespace) -> float | torch.Tensor:
     """Perform validation on the validation set"""
     batch_time = AverageMeter()
     losses = AverageMeter()

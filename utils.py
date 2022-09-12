@@ -1,37 +1,37 @@
 from __future__ import annotations
 
-from argparse import Namespace
+import argparse
+from dataclasses import dataclass
 
 import numpy as np
 import scipy.io as sio
 import torch
 from torch.utils import data
-from torch.utils.data import TensorDataset
+from torch.utils.data import TensorDataset, DataLoader
 
 
-class AverageMeter(object):
+@dataclass
+class AverageMeter:
     """Computes and stores the average and current value"""
+    val: float | torch.Tensor = 0.
+    avg: float | torch.Tensor = 0.
+    sum: float | torch.Tensor = 0.
+    count: float | torch.Tensor = 0.
 
-    def __init__(self):
+    def reset(self) -> None:
         self.val = 0.
         self.avg = 0.
         self.sum = 0.
         self.count = 0.
 
-    def reset(self):
-        self.val = 0.
-        self.avg = 0.
-        self.sum = 0.
-        self.count = 0.
-
-    def update(self, val: torch.Tensor | float, n: int = 1):
+    def update(self, val: float | torch.Tensor, n: int = 1) -> None:
         self.val = val
         self.sum += val * n
         self.count += n
         self.avg = self.sum / self.count
 
 
-def load_data(args: Namespace):
+def load_data(args: argparse.Namespace) -> tuple[DataLoader, DataLoader, DataLoader]:
     """Loads data, either from .mat file or saved dictionary, and returns tuple of DataLoaders"""
     if args.data is False:
         mat = sio.loadmat('Hyper_2012_TF_sugar.mat')
@@ -56,9 +56,9 @@ def load_data(args: Namespace):
         train_ds, val_ds = data.random_split(ds, [train_size, val_size])
         # Create data loaders
         kwargs = {'num_workers': 4, 'pin_memory': True}
-        train_loader = data.DataLoader(train_ds, batch_size=args.batch_size, shuffle=True, **kwargs)
-        val_loader = data.DataLoader(val_ds, batch_size=args.batch_size, shuffle=True, **kwargs)
-        test_loader = data.DataLoader(test_ds, batch_size=args.batch_size, shuffle=True, **kwargs)
+        train_loader = DataLoader(train_ds, batch_size=args.batch_size, shuffle=True, **kwargs)
+        val_loader = DataLoader(val_ds, batch_size=args.batch_size, shuffle=True, **kwargs)
+        test_loader = DataLoader(test_ds, batch_size=args.batch_size, shuffle=True, **kwargs)
         # Save data loaders to file
         if args.resume is False:
             d = {'train_loader': train_loader,
